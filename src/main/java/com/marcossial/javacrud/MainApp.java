@@ -3,6 +3,8 @@ package com.marcossial.javacrud;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class MainApp {
@@ -20,6 +22,7 @@ public class MainApp {
                 + "\n3 - UPDATE"
                 + "\n4 - DELETE");
 
+                String sql;
                 int action = scanner.nextInt();
                 scanner.nextLine();
                 switch (action) {
@@ -42,25 +45,53 @@ public class MainApp {
                         int quantidadeEstoque = scanner.nextInt();
                         scanner.nextLine();
 
-                        String sql = "INSERT INTO livros (titulo, autor, ano_publicacao, editora, quantidade_estoque"
-                                + " VALUES (?, ?, ?, ?, ?)";
+                        sql = "INSERT INTO livros (titulo, autor, ano_publicacao, editora, quantidade_estoque) "
+                                + "VALUES (?, ?, ?, ?, ?)";
 
                         try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-                            preparedStatement.setString(1, editora);
+                            preparedStatement.setString(1, titulo);
                             preparedStatement.setString(2, autor);
                             preparedStatement.setInt(3, anoPublicacao);
                             preparedStatement.setString(4, editora);
                             preparedStatement.setInt(5, quantidadeEstoque);
+
+                            int rowsAffected = preparedStatement.executeUpdate();
+                            if (rowsAffected > 0) {
+                                System.out.println("Book registered.");
+                            }
                         } catch (Exception e) {
                             throw new RuntimeException("Failed to create new book: " + e);
                         }
                         break;
                     case 2:
                         // READ
+                        ArrayList<Livro> livros = new ArrayList<>();
+                        sql = "SELECT * FROM livros";
 
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                             ResultSet resultSet = preparedStatement.executeQuery()) {
+                            while (resultSet.next()) {
+                                Livro l = new Livro();
+                                l.setId(resultSet.getInt("id"));
+                                l.setTitulo(resultSet.getString("titulo"));
+                                l.setAutor(resultSet.getString("autor"));
+                                l.setAno(resultSet.getInt("ano_publicacao"));
+                                l.setEditora(resultSet.getString("editora"));
+                                l.setQuantidade(resultSet.getInt("quantidade_estoque"));
+                                livros.add(l);
+                            }
+
+                            for (Livro l : livros) {
+                                System.out.println(l + "\n");
+                            }
+
+                            System.out.println("Press enter to continue");
+                            scanner.nextLine();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                 }
             }
-
         } catch (Exception e) {
             throw new RuntimeException("Failed to connect to server: " + e);
         }

@@ -58,4 +58,10 @@ public class Livro implements Serializable {
     public void setQuantidade(int quantidade) {
         this.quantidade = quantidade;
     }
+
+    @Override
+    public String toString() {
+        return("id: " + id + " titulo: " + titulo + " autor: " + autor
+                + " editora: " + editora + " ano: " + ano + " quantidade: " + quantidade);
+    }
 }
