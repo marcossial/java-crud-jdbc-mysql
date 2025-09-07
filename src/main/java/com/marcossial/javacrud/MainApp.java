@@ -22,11 +22,14 @@ public class MainApp {
                 switch (action) {
                     case 0 -> terminate();
                     case 1 -> createBook(connection, scanner);
-                    case 2 -> readBooks(connection, scanner);
+                    case 2 -> readBooks(connection);
                     case 3 -> updateBook(connection, scanner);
                     case 4 -> deleteBook(connection, scanner);
                     default -> System.out.println("Invalid action");
                 }
+
+                System.out.println("Press enter to continue...");
+                scanner.nextLine();
             }
         } catch (Exception e) {
             throw new RuntimeException("Failed to connect to server: " + e);
@@ -68,14 +71,14 @@ public class MainApp {
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("New book created... press enter to continue");
+                System.out.println("New book: " + titulo + " - " + autor + " (" + anoPublicacao + ") created");
             }
         } catch (Exception e) {
-            throw new RuntimeException("Failed to create new book: " + e);
+            throw new RuntimeException("Failed to create new book " + e);
         }
     }
 
-    public static void readBooks(Connection connection, Scanner scanner) {
+    public static void readBooks(Connection connection) {
         ArrayList<Livro> livros = new ArrayList<>();
         String sql = "SELECT * FROM livros";
 
@@ -93,12 +96,9 @@ public class MainApp {
             }
 
             for (Livro l : livros) {
-                System.out.println(l + "\n");
+                System.out.println(l);
             }
 
-            livros.clear();
-            System.out.println("Press enter to continue");
-            scanner.nextLine();
         } catch (Exception e) {
             System.err.println("Failed to read books " + e);
         }

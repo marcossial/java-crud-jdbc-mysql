@@ -61,7 +61,9 @@ public class Livro implements Serializable {
 
     @Override
     public String toString() {
-        return("id: " + id + " titulo: " + titulo + " autor: " + autor
-                + " editora: " + editora + " ano: " + ano + " quantidade: " + quantidade);
+        return String.format(
+                "[%d] %s (%d) - %s | Autor: %s | Qtd: %d",
+                id, titulo, ano, editora, autor, quantidade
+        );
     }
 }
